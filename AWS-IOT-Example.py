@@ -7,6 +7,9 @@ import requests
 import time
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
+def getDateTimeString():
+  return str(datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p"))
+
 myMQTTClient = AWSIoTMQTTClient("ClientID")
 myMQTTClient.configureEndpoint("xxxxxxxxx.iot.yourregion.amazonaws.com", 8883)
 
@@ -16,8 +19,7 @@ print ('Initiating Realtime Data Transfer From Raspberry Pi...')
 
 Myvar= myMQTTClient.connect()
 
-date = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
-print (f"Timestamp:{date}")
+print (f"Timestamp:{getDateTimeString()}")
 
 red_led = LED(17)
 pir = MotionSensor (4)
@@ -27,11 +29,11 @@ while True:
     pir.wait_for_motion()
     print("Motion Detected")
     message= "Motion Detected"
-    myMQTTClient.publish("topic/pi", "{\"MotionMessage\":\""+ message + "\", \"Timestamp\" :\""+ str(date)+ "\"}", 0)
+    myMQTTClient.publish("topic/pi", "{\"MotionMessage\":\"" + message + "\", \"Timestamp\" :\"" + getDateTimeString() + "\"}", 0)
     red_led.on()
     pir.wait_for_no_motion()
     red_led.off()
     print ("No Motion")
     message= "No Motion"
-    myMQTTClient.publish("topic/pi", "{\"MotionMessage\":\""+ message + "\", \"Timestamp\" :\""+ str(date)+ "\"}", 0)
+    myMQTTClient.publish("topic/pi", "{\"MotionMessage\":\"" + message + "\", \"Timestamp\" :\"" + getDateTimeString() + "\"}", 0)
     time.sleep(1)
